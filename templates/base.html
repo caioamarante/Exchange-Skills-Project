@@ -14,8 +14,14 @@
             <div class="nav-links">
                 {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="{% url 'profile' %}">Meu Perfil</a>
-                    <a href="{% url 'logout' %}">Sair</a>
+                    <a href="mailto:suporte@skillexchange.com">Suporte</a>
+                    <div class="dropdown">
+                        <button class="dropbtn">{{ user.full_name }} ▾</button>
+                        <div class="dropdown-content">
+                            <a href="{% url 'profile' %}">Meu Perfil</a>
+                            <a href="{% url 'logout' %}">Sair</a>
+                        </div>
+                    </div>
                 {% else %}
                     <a href="{% url 'login' %}">Entrar</a>
                     <a href="{% url 'signup' %}" class="btn">Cadastrar</a>
