@@ -6,11 +6,31 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'full_name', 'cpf', 'skill_offered', 'experience_time', 'skill_desired', 'certificate')
+        widgets = {
+            'experience_time': forms.TextInput(attrs={'placeholder': 'Ex: 2 anos, 6 meses, etc.'}),
+            'cpf': forms.TextInput(attrs={'placeholder': '000.000.000-00'}),
+            'skill_offered': forms.TextInput(attrs={'placeholder': 'Ex: Python, Design Gráfico'}),
+            'skill_desired': forms.TextInput(attrs={'placeholder': 'Ex: React, Marketing'}),
+        }
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('email', 'full_name', 'cpf', 'skill_offered', 'experience_time', 'skill_desired', 'certificate')
-
+        widgets = {
+            'experience_time': forms.TextInput(attrs={'placeholder': 'Ex: 2 anos, 6 meses, etc.'}),
+            'cpf': forms.TextInput(attrs={'placeholder': '000.000.000-00'}),
+            'skill_offered': forms.TextInput(attrs={'placeholder': 'Ex: Python, Design Gráfico'}),
+            'skill_desired': forms.TextInput(attrs={'placeholder': 'Ex: React, Marketing'}),
+        }
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('full_name', 'skill_offered', 'experience_time', 'skill_desired', 'certificate')
+        widgets = {
+            'experience_time': forms.TextInput(attrs={'placeholder': 'Ex: 2 anos, 6 meses, etc.'}),
+            'skill_offered': forms.TextInput(attrs={'placeholder': 'Ex: Python, Design Gráfico'}),
+            'skill_desired': forms.TextInput(attrs={'placeholder': 'Ex: React, Marketing'}),
+        }
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.EmailField(label='E-mail', widget=forms.EmailInput(attrs={'autofocus': True}))

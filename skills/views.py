@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from django.contrib import messages
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProfileUpdateForm
 from .models import User
 
 def home(request):
@@ -56,3 +57,15 @@ def dashboard(request):
         'perfect_matches': perfect_matches,
         'potential_teachers': potential_teachers
     })
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Seu perfil foi atualizado com sucesso!')
+            return redirect('profile')
+    else:
+        form = ProfileUpdateForm(instance=request.user)
+    return render(request, 'profile.html', {'form': form})
