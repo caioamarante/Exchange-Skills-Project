@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-container">
+    <h2>Crie sua Conta</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="form-text">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <ul class="errorlist"><li>{{ error }}</li></ul>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Cadastrar</button>
+    </form>
+</div>
+{% endblock %}

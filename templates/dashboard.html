@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h2>Olá, {{ user.full_name }}! 👋</h2>
+    <p style="color: var(--text-secondary);">Você oferece: <strong style="color: var(--text-primary);">{{ user.skill_offered }}</strong> | Você deseja: <strong style="color: var(--text-primary);">{{ user.skill_desired }}</strong></p>
+</div>
+
+<h3>🔥 Seus Matches Perfeitos</h3>
+<p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Estas pessoas oferecem o que você quer aprender, e querem aprender o que você oferece!</p>
+{% if perfect_matches %}
+    <div class="dashboard-grid">
+        {% for match in perfect_matches %}
+        <div class="card" style="border-color: var(--accent);">
+            <div class="card-header">
+                <span class="badge badge-blue">Match Perfeito</span>
+            </div>
+            <h3>{{ match.full_name }}</h3>
+            <p><strong>Oferece:</strong> {{ match.skill_offered }}</p>
+            <p><strong>Deseja:</strong> {{ match.skill_desired }}</p>
+            <p><strong>Experiência:</strong> {{ match.experience_time }}</p>
+            {% if match.certificate %}
+                <p><strong>Certificado:</strong> <a href="{{ match.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline;">Visualizar</a></p>
+            {% endif %}
+            <div class="card-footer">
+                <a href="mailto:{{ match.email }}" class="btn btn-outline" style="width: 100%; text-align: center;">Contatar por E-mail</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p style="color: var(--text-secondary); padding: 2rem; border: 1px dashed var(--border-color); text-align: center; border-radius: 8px;">Nenhum match perfeito encontrado ainda. Que tal convidar amigos?</p>
+{% endif %}
+
+<h3 style="margin-top: 3rem;">📚 Pessoas que oferecem o que você deseja</h3>
+<p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Eles ensinam o que você quer, mas desejam outras habilidades em troca.</p>
+{% if potential_teachers %}
+    <div class="dashboard-grid">
+        {% for teacher in potential_teachers %}
+        <div class="card">
+            <div class="card-header">
+                <span class="badge">Professor Potencial</span>
+            </div>
+            <h3>{{ teacher.full_name }}</h3>
+            <p><strong>Oferece:</strong> {{ teacher.skill_offered }}</p>
+            <p><strong>Deseja:</strong> {{ teacher.skill_desired }}</p>
+            <p><strong>Experiência:</strong> {{ teacher.experience_time }}</p>
+            {% if teacher.certificate %}
+                <p><strong>Certificado:</strong> <a href="{{ teacher.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline;">Visualizar</a></p>
+            {% endif %}
+            <div class="card-footer">
+                <a href="mailto:{{ teacher.email }}" class="btn btn-outline" style="width: 100%; text-align: center;">Contatar por E-mail</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p style="color: var(--text-secondary); padding: 2rem; border: 1px dashed var(--border-color); text-align: center; border-radius: 8px;">Ninguém encontrado oferecendo esta habilidade no momento.</p>
+{% endif %}
+{% endblock %}

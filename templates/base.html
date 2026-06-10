@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Exchange</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'home' %}" class="logo">Skill Exchange</a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'logout' %}">Sair</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Entrar</a>
+                    <a href="{% url 'signup' %}" class="btn">Cadastrar</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+</body>
+</html>
