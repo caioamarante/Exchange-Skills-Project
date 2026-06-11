@@ -16,7 +16,14 @@
                     <a href="{% url 'dashboard' %}">Dashboard</a>
                     <a href="mailto:suporte@skillexchange.com">Suporte</a>
                     <div class="dropdown">
-                        <button class="dropbtn">{{ user.full_name }} ▾</button>
+                        <button class="dropbtn">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Foto" class="nav-profile-pic">
+                            {% else %}
+                                <div class="nav-profile-pic-placeholder">{{ user.full_name|make_list|first|upper }}</div>
+                            {% endif %}
+                            {{ user.full_name }} ▾
+                        </button>
                         <div class="dropdown-content">
                             <a href="{% url 'profile' %}">Meu Perfil</a>
                             <a href="{% url 'logout' %}">Sair</a>

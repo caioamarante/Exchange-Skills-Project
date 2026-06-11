@@ -9,7 +9,7 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('-date_joined',)
     
     fieldsets = (
-        ('Informações Pessoais', {'fields': ('email', 'password', 'full_name', 'cpf')}),
+        ('Informações Pessoais', {'fields': ('email', 'password', 'full_name', 'cpf', 'profile_picture')}),
         ('Habilidades e Experiência', {'fields': ('skill_offered', 'experience_time', 'skill_desired', 'certificate')}),
         ('Permissões', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Datas Importantes', {'fields': ('last_login', 'date_joined')}),

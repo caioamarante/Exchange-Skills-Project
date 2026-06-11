@@ -25,6 +25,7 @@ class User(AbstractUser):
     experience_time = models.CharField(max_length=50, verbose_name="Tempo de experiência")
     skill_desired = models.CharField(max_length=100, verbose_name="Habilidade que deseja aprender")
     certificate = models.FileField(upload_to='certificates/', blank=True, null=True, verbose_name="Certificado")
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, verbose_name="Foto de Perfil")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name', 'cpf', 'skill_offered', 'experience_time', 'skill_desired']
