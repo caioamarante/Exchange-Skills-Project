@@ -361,3 +361,51 @@ input[type="file"]::file-selector-button:hover {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+/* Profile Picture Editor (WhatsApp style) */
+.profile-pic-editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.profile-pic-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    border: 3px solid var(--accent);
+    transition: transform 0.3s ease;
+}
+
+.profile-pic-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.profile-pic-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+.profile-pic-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    padding: 0.5rem 0;
+    font-size: 0.8rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.profile-pic-wrapper:hover .profile-pic-overlay {
+    transform: translateY(0);
+}
