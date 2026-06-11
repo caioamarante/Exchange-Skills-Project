@@ -318,13 +318,14 @@ input[type="file"]::file-selector-button:hover {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: var(--accent);
-    color: #000;
+    background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .dropdown:hover .dropbtn {
@@ -377,12 +378,23 @@ input[type="file"]::file-selector-button:hover {
     border-radius: 50%;
     cursor: pointer;
     overflow: hidden;
-    border: 3px solid var(--accent);
-    transition: transform 0.3s ease;
+    border: 4px solid var(--bg-surface);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: var(--bg-surface);
 }
 
 .profile-pic-wrapper:hover {
     transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.profile-pic-placeholder-large {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0;
+    font-size: 40px;
+    box-shadow: none;
 }
 
 .profile-pic-wrapper img {
