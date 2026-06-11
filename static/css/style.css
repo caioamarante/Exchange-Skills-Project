@@ -421,3 +421,43 @@ input[type="file"]::file-selector-button:hover {
 .profile-pic-wrapper:hover .profile-pic-overlay {
     transform: translateY(0);
 }
+
+/* Tagify Overrides for Dark Theme */
+.tagify {
+    --tags-border-color: var(--border-color);
+    --tags-hover-border-color: var(--accent);
+    --tags-focus-border-color: var(--accent);
+    --tag-bg: var(--accent);
+    --tag-hover: var(--accent-hover);
+    --tag-text-color: #fff;
+    --tag-text-color--edit: #fff;
+    --tag-pad: 0.3rem 0.6rem;
+    --tag-inset-shadow-size: 1.1em;
+    --tag-invalid-color: var(--error);
+    --tag-invalid-bg: rgba(239, 68, 68, 0.2);
+    --tag-remove-bg: rgba(255, 255, 255, 0.2);
+    --tag-remove-btn-color: #fff;
+    --tag-remove-btn-bg: none;
+    --tag-remove-btn-bg--hover: rgba(0, 0, 0, 0.2);
+    
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    border-radius: 8px;
+    padding: 0.2rem;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.tagify:hover {
+    border-color: var(--accent);
+}
+
+.tagify.tagify--focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.tagify__input {
+    color: var(--text-primary);
+}

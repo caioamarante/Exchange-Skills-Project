@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skill Exchange</title>
     {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <header>
@@ -50,5 +52,21 @@
         {% block content %}
         {% endblock content %}
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var inputOffered = document.querySelector('input[name="skill_offered"]');
+            var inputDesired = document.querySelector('input[name="skill_desired"]');
+            
+            // Format to send comma-separated strings back to Django
+            var tagifyOptions = {
+                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(', ')
+            };
+            
+            if (inputOffered) new Tagify(inputOffered, tagifyOptions);
+            if (inputDesired) new Tagify(inputDesired, tagifyOptions);
+        });
+    </script>
 </body>
 </html>
