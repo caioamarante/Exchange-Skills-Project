@@ -169,16 +169,32 @@ def like_user(request, user_id):
 def chat_list(request):
     # Buscar salas de chat do usuário
     rooms = ChatRoom.objects.filter(Q(user1=request.user) | Q(user2=request.user)).order_by('-created_at')
-    chat_data = []
+    
+    new_matches = []
+    active_chats = []
+    
     for room in rooms:
         other_user = room.get_other_user(request.user)
         last_message = room.messages.last()
-        chat_data.append({
+        
+        chat_info = {
             'room': room,
             'other_user': other_user,
             'last_message': last_message
-        })
-    return render(request, 'chats.html', {'chats': chat_data})
+        }
+        
+        if last_message is None:
+            new_matches.append(chat_info)
+        else:
+            active_chats.append(chat_info)
+            
+    # Ordenar active_chats pela última mensagem (mais recente primeiro)
+    active_chats.sort(key=lambda x: x['last_message'].timestamp, reverse=True)
+    
+    return render(request, 'chats.html', {
+        'new_matches': new_matches,
+        'active_chats': active_chats
+    })
 
 @login_required
 def chat_room(request, room_id):

@@ -1,42 +1,141 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="auth-container" style="max-width: 800px;">
-    <h2>Suas Conversas 💬</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Aqui estão todos os seus Matches Mútuos.</p>
+<style>
+    .matches-scroll {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+    }
+    .matches-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+    .matches-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--border-color);
+        border-radius: 10px;
+    }
+    .match-bubble {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        min-width: 80px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: transform 0.2s;
+    }
+    .match-bubble:hover {
+        transform: scale(1.05);
+    }
+    .match-pic {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--accent);
+        padding: 2px;
+        background: var(--bg-surface);
+    }
+    .match-pic-placeholder {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 3px solid var(--accent);
+        padding: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .match-name {
+        font-size: 0.85rem;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 80px;
+    }
+    .chat-row {
+        padding: 1rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.2rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-bottom: 1px solid var(--border-color);
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+    .chat-row:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .chat-row:last-child {
+        border-bottom: none;
+    }
+</style>
 
-    {% if chats %}
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-            {% for chat in chats %}
-            <div class="card" style="padding: 1rem; display: flex; flex-direction: row; align-items: center; gap: 1.5rem; cursor: pointer; transition: background 0.2s;" onclick="window.location.href='{% url 'chat_room' chat.room.id %}'">
-                
-                {% if chat.other_user.profile_picture %}
-                <img src="{{ chat.other_user.profile_picture.url }}" alt="Foto" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
-                {% else %}
-                <div class="nav-profile-pic-placeholder" style="width: 60px; height: 60px; font-size: 24px; flex-shrink: 0;">
-                    {{ chat.other_user.full_name|make_list|first|upper }}
-                </div>
-                {% endif %}
-                
-                <div style="flex-grow: 1;">
-                    <h3 style="margin: 0; font-size: 1.2rem;">{{ chat.other_user.full_name }}</h3>
-                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">
-                        {% if chat.last_message %}
-                            {% if chat.last_message.sender == user %}Você: {% endif %}{{ chat.last_message.content|truncatechars:40 }}
-                        {% else %}
-                            Nenhuma mensagem ainda. Diga um olá! 👋
-                        {% endif %}
-                    </p>
-                </div>
-                
-                <a href="{% url 'chat_room' chat.room.id %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">Abrir</a>
-            </div>
+<div class="auth-container" style="max-width: 800px; padding: 2rem;">
+    
+    <h3 style="color: var(--accent); margin-bottom: 1rem;">Novos Matches</h3>
+    {% if new_matches %}
+        <div class="matches-scroll">
+            {% for chat in new_matches %}
+                <a href="{% url 'chat_room' chat.room.id %}" class="match-bubble">
+                    {% if chat.other_user.profile_picture %}
+                        <img src="{{ chat.other_user.profile_picture.url }}" alt="Foto" class="match-pic">
+                    {% else %}
+                        <div class="match-pic-placeholder">
+                            {{ chat.other_user.full_name|make_list|first|upper }}
+                        </div>
+                    {% endif %}
+                    <span class="match-name">{{ chat.other_user.full_name|truncatechars:12 }}</span>
+                </a>
             {% endfor %}
         </div>
     {% else %}
-        <div style="text-align: center; padding: 3rem; border: 1px dashed var(--border-color); border-radius: 8px;">
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Você ainda não possui nenhum Match.</p>
-            <a href="{% url 'dashboard' %}" class="btn">Encontrar Matches</a>
-        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 2rem;">Comece a curtir perfis para conseguir novos matches!</p>
     {% endif %}
+
+    <h3 style="color: var(--accent); margin-top: 2rem; margin-bottom: 1rem;">Mensagens</h3>
+    {% if active_chats %}
+        <div class="card" style="padding: 0; overflow: hidden;">
+            {% for chat in active_chats %}
+                <a href="{% url 'chat_room' chat.room.id %}" class="chat-row">
+                    {% if chat.other_user.profile_picture %}
+                        <img src="{{ chat.other_user.profile_picture.url }}" alt="Foto" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <div class="nav-profile-pic-placeholder" style="width: 60px; height: 60px; font-size: 24px; flex-shrink: 0;">
+                            {{ chat.other_user.full_name|make_list|first|upper }}
+                        </div>
+                    {% endif %}
+                    
+                    <div style="flex-grow: 1; overflow: hidden;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">{{ chat.other_user.full_name }}</h3>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">{{ chat.last_message.timestamp|date:"d/m H:i" }}</span>
+                        </div>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {% if chat.last_message.sender == user %}
+                                <span>Você:</span> 
+                            {% endif %}
+                            {{ chat.last_message.content }}
+                        </p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 2rem; border: 1px dashed var(--border-color); border-radius: 8px;">
+            Nenhuma conversa ativa no momento. Clique em um dos seus novos matches acima para enviar a primeira mensagem!
+        </p>
+    {% endif %}
+
 </div>
 {% endblock %}
