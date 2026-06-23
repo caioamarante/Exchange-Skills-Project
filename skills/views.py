@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProfileUpdateForm, SupportForm
-from .models import User
+from .models import User, Like, ChatRoom, Message
 
 def home(request):
     if request.user.is_authenticated:
@@ -74,9 +74,20 @@ def dashboard(request):
         else:
             potential_teachers = User.objects.none()
 
+    # Buscar curtidas e matches para atualizar botões
+    likes_sent_ids = Like.objects.filter(from_user=user).values_list('to_user_id', flat=True)
+    
+    # Pegar todos os ChatRooms onde o usuário está (user1 ou user2)
+    chat_rooms = ChatRoom.objects.filter(Q(user1=user) | Q(user2=user))
+    matched_user_ids = []
+    for room in chat_rooms:
+        matched_user_ids.append(room.get_other_user(user).id)
+
     return render(request, 'dashboard.html', {
         'perfect_matches': perfect_matches,
-        'potential_teachers': potential_teachers
+        'potential_teachers': potential_teachers,
+        'likes_sent_ids': list(likes_sent_ids),
+        'matched_user_ids': matched_user_ids
     })
 
 @login_required
@@ -120,3 +131,78 @@ def support_view(request):
         form = SupportForm(initial=initial_data)
         
     return render(request, 'support.html', {'form': form})
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
+@login_required
+def like_user(request, user_id):
+    if request.method == 'POST':
+        target_user = get_object_or_404(User, id=user_id)
+        
+        # Evitar curtir a si mesmo
+        if target_user == request.user:
+            return JsonResponse({'error': 'Ação inválida'}, status=400)
+            
+        # Criar a curtida se não existir
+        Like.objects.get_or_create(from_user=request.user, to_user=target_user)
+        
+        # Verificar se é Match (o outro usuário também me curtiu?)
+        is_match = Like.objects.filter(from_user=target_user, to_user=request.user).exists()
+        
+        if is_match:
+            # Verifica se já não existe uma sala de chat
+            room_exists = ChatRoom.objects.filter(
+                Q(user1=request.user, user2=target_user) | Q(user1=target_user, user2=request.user)
+            ).exists()
+            
+            if not room_exists:
+                # Cria a sala de chat (Garante ordem dos IDs para facilitar buscas futuras, embora não seja estritamente necessário pelo Q)
+                ChatRoom.objects.create(user1=request.user, user2=target_user)
+                
+            return JsonResponse({'status': 'match'})
+            
+        return JsonResponse({'status': 'liked'})
+    return JsonResponse({'error': 'Método inválido'}, status=405)
+
+@login_required
+def chat_list(request):
+    # Buscar salas de chat do usuário
+    rooms = ChatRoom.objects.filter(Q(user1=request.user) | Q(user2=request.user)).order_by('-created_at')
+    chat_data = []
+    for room in rooms:
+        other_user = room.get_other_user(request.user)
+        last_message = room.messages.last()
+        chat_data.append({
+            'room': room,
+            'other_user': other_user,
+            'last_message': last_message
+        })
+    return render(request, 'chats.html', {'chats': chat_data})
+
+@login_required
+def chat_room(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id)
+    
+    # Segurança: Apenas participantes podem acessar a sala
+    if request.user != room.user1 and request.user != room.user2:
+        messages.error(request, 'Você não tem permissão para acessar este chat.')
+        return redirect('dashboard')
+        
+    other_user = room.get_other_user(request.user)
+    
+    if request.method == 'POST':
+        content = request.POST.get('content', '').strip()
+        if content:
+            Message.objects.create(room=room, sender=request.user, content=content)
+            # Para o MVP simples via HTTP POST, vamos apenas recarregar a página para ver a nova mensagem
+            return redirect('chat_room', room_id=room.id)
+            
+    # Mensagens enviadas para esta sala
+    room_messages = room.messages.all()
+    
+    return render(request, 'chat_room.html', {
+        'room': room,
+        'other_user': other_user,
+        'messages': room_messages
+    })

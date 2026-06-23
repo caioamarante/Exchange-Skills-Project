@@ -16,6 +16,7 @@
             <div class="nav-links">
                 {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'chats' %}">💬 Mensagens</a>
                     <a href="{% url 'support' %}">Suporte</a>
                     <div class="dropdown">
                         <button class="dropbtn">

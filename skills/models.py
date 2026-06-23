@@ -34,3 +34,42 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.full_name} - Oferece: {self.skill_offered} | Quer: {self.skill_desired}"
+
+class Like(models.Model):
+    from_user = models.ForeignKey(User, related_name='likes_sent', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(User, related_name='likes_received', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('from_user', 'to_user')
+
+    def __str__(self):
+        return f"{self.from_user.full_name} curtiu {self.to_user.full_name}"
+
+class ChatRoom(models.Model):
+    user1 = models.ForeignKey(User, related_name='chatrooms_user1', on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name='chatrooms_user2', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user1', 'user2')
+
+    def get_other_user(self, current_user):
+        if self.user1 == current_user:
+            return self.user2
+        return self.user1
+
+    def __str__(self):
+        return f"Chat: {self.user1.full_name} & {self.user2.full_name}"
+
+class Message(models.Model):
+    room = models.ForeignKey(ChatRoom, related_name='messages', on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, related_name='messages_sent', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"{self.sender.full_name}: {self.content[:20]}"

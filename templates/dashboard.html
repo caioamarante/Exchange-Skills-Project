@@ -29,7 +29,13 @@
                     <p><strong>Certificado:</strong> <a href="{{ match.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Visualizar</a></p>
                 {% endif %}
                 <div class="card-footer" style="margin-top: auto;">
-                    <a href="mailto:{{ match.email }}" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px);">Contatar por E-mail</a>
+                    {% if match.id in matched_user_ids %}
+                        <a href="{% url 'chats' %}" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(0, 150, 0, 0.2); border-color: #2ea043; color: #2ea043;">Chat Mútuo Aberto</a>
+                    {% elif match.id in likes_sent_ids %}
+                        <button class="btn btn-outline" disabled style="width: 100%; text-align: center; opacity: 0.6; cursor: not-allowed;">Aguardando Resposta...</button>
+                    {% else %}
+                        <button onclick="likeUser({{ match.id }}, this)" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px);">❤️ Curtir Perfil</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -63,7 +69,13 @@
                     <p><strong>Certificado:</strong> <a href="{{ teacher.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Visualizar</a></p>
                 {% endif %}
                 <div class="card-footer" style="margin-top: auto;">
-                    <a href="mailto:{{ teacher.email }}" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px);">Contatar por E-mail</a>
+                    {% if teacher.id in matched_user_ids %}
+                        <a href="{% url 'chats' %}" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(0, 150, 0, 0.2); border-color: #2ea043; color: #2ea043;">Chat Mútuo Aberto</a>
+                    {% elif teacher.id in likes_sent_ids %}
+                        <button class="btn btn-outline" disabled style="width: 100%; text-align: center; opacity: 0.6; cursor: not-allowed;">Aguardando Resposta...</button>
+                    {% else %}
+                        <button onclick="likeUser({{ teacher.id }}, this)" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px);">❤️ Curtir Perfil</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -72,4 +84,47 @@
 {% else %}
     <p style="color: var(--text-secondary); padding: 2rem; border: 1px dashed var(--border-color); text-align: center; border-radius: 8px;">Ninguém encontrado oferecendo esta habilidade no momento.</p>
 {% endif %}
+
+<script>
+function likeUser(userId, buttonElement) {
+    const originalText = buttonElement.innerText;
+    buttonElement.innerText = "Processando...";
+    buttonElement.disabled = true;
+
+    fetch(`/like/${userId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'match') {
+            buttonElement.innerText = "💖 Deu Match! (Ir p/ Chat)";
+            buttonElement.style.borderColor = "#2ea043";
+            buttonElement.style.color = "#2ea043";
+            buttonElement.style.background = "rgba(0, 150, 0, 0.2)";
+            buttonElement.disabled = false;
+            buttonElement.onclick = () => window.location.href = "{% url 'chats' %}";
+            alert("Parabéns! Vocês deram um Match Mútuo! Uma nova sala de chat foi criada.");
+        } else if (data.status === 'liked') {
+            buttonElement.innerText = "Aguardando Resposta...";
+            buttonElement.style.opacity = "0.6";
+            buttonElement.style.cursor = "not-allowed";
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        buttonElement.innerText = "Erro ao curtir";
+        setTimeout(() => {
+            buttonElement.innerText = originalText;
+            buttonElement.disabled = false;
+        }, 2000);
+    });
+}
+</script>
 {% endblock %}
