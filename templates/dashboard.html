@@ -11,18 +11,26 @@
     <div class="dashboard-grid">
         {% for match in perfect_matches %}
         <div class="card" style="border-color: var(--accent);">
-            <div class="card-header">
-                <span class="badge badge-blue">Match Perfeito</span>
-            </div>
-            <h3>{{ match.full_name }}</h3>
-            <p><strong>Oferece:</strong> {{ match.skill_offered }}</p>
-            <p><strong>Deseja:</strong> {{ match.skill_desired }}</p>
-            <p><strong>Experiência:</strong> {{ match.experience_time }}</p>
-            {% if match.certificate %}
-                <p><strong>Certificado:</strong> <a href="{{ match.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline;">Visualizar</a></p>
+            {% if match.profile_picture %}
+            <div class="card-bg-image" style="background-image: url('{{ match.profile_picture.url }}');"></div>
+            {% else %}
+            <div class="card-bg-image" style="background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%); opacity: 0.1; filter: none;"></div>
             {% endif %}
-            <div class="card-footer">
-                <a href="mailto:{{ match.email }}" class="btn btn-outline" style="width: 100%; text-align: center;">Contatar por E-mail</a>
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="badge badge-blue" style="box-shadow: 0 2px 4px rgba(0,0,0,0.3);">Match Perfeito</span>
+                </div>
+                <h3 class="card-title-shadow" style="font-size: 1.6rem; margin-bottom: 1rem; color: #fff;">{{ match.full_name }}</h3>
+                <p><strong>Oferece:</strong> {{ match.skill_offered }}</p>
+                <p><strong>Deseja:</strong> {{ match.skill_desired }}</p>
+                <p><strong>Experiência:</strong> {{ match.experience_time }}</p>
+                {% if match.certificate %}
+                    <p><strong>Certificado:</strong> <a href="{{ match.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Visualizar</a></p>
+                {% endif %}
+                <div class="card-footer" style="margin-top: auto;">
+                    <a href="mailto:{{ match.email }}" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px);">Contatar por E-mail</a>
+                </div>
             </div>
         </div>
         {% endfor %}
@@ -37,18 +45,26 @@
     <div class="dashboard-grid">
         {% for teacher in potential_teachers %}
         <div class="card">
-            <div class="card-header">
-                <span class="badge">Professor Potencial</span>
-            </div>
-            <h3>{{ teacher.full_name }}</h3>
-            <p><strong>Oferece:</strong> {{ teacher.skill_offered }}</p>
-            <p><strong>Deseja:</strong> {{ teacher.skill_desired }}</p>
-            <p><strong>Experiência:</strong> {{ teacher.experience_time }}</p>
-            {% if teacher.certificate %}
-                <p><strong>Certificado:</strong> <a href="{{ teacher.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline;">Visualizar</a></p>
+            {% if teacher.profile_picture %}
+            <div class="card-bg-image" style="background-image: url('{{ teacher.profile_picture.url }}');"></div>
+            {% else %}
+            <div class="card-bg-image" style="background: linear-gradient(135deg, var(--text-secondary) 0%, #30363d 100%); opacity: 0.1; filter: none;"></div>
             {% endif %}
-            <div class="card-footer">
-                <a href="mailto:{{ teacher.email }}" class="btn btn-outline" style="width: 100%; text-align: center;">Contatar por E-mail</a>
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="badge" style="box-shadow: 0 2px 4px rgba(0,0,0,0.3);">Professor Potencial</span>
+                </div>
+                <h3 class="card-title-shadow" style="font-size: 1.6rem; margin-bottom: 1rem; color: #fff;">{{ teacher.full_name }}</h3>
+                <p><strong>Oferece:</strong> {{ teacher.skill_offered }}</p>
+                <p><strong>Deseja:</strong> {{ teacher.skill_desired }}</p>
+                <p><strong>Experiência:</strong> {{ teacher.experience_time }}</p>
+                {% if teacher.certificate %}
+                    <p><strong>Certificado:</strong> <a href="{{ teacher.certificate.url }}" target="_blank" style="color: var(--accent); text-decoration: underline; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Visualizar</a></p>
+                {% endif %}
+                <div class="card-footer" style="margin-top: auto;">
+                    <a href="mailto:{{ teacher.email }}" class="btn btn-outline" style="width: 100%; text-align: center; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(5px);">Contatar por E-mail</a>
+                </div>
             </div>
         </div>
         {% endfor %}
