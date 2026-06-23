@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-container">
+    <h2>Fale Conosco</h2>
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">Como podemos te ajudar? Envie sua dúvida ou sugestão e responderemos em breve.</p>
+    
+    <form method="post" action="{% url 'support' %}">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if field.help_text %}
+                    <p class="form-text">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">
+            Enviar Mensagem
+        </button>
+    </form>
+</div>
+{% endblock content %}

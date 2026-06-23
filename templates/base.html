@@ -16,7 +16,7 @@
             <div class="nav-links">
                 {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="mailto:suporte@skillexchange.com">Suporte</a>
+                    <a href="{% url 'support' %}">Suporte</a>
                     <div class="dropdown">
                         <button class="dropbtn">
                             {% if user.profile_picture %}

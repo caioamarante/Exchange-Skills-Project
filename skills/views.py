@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProfileUpdateForm
+from django.core.mail import send_mail
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProfileUpdateForm, SupportForm
 from .models import User
 
 def home(request):
@@ -89,3 +90,33 @@ def profile_view(request):
     else:
         form = ProfileUpdateForm(instance=request.user)
     return render(request, 'profile.html', {'form': form})
+
+@login_required
+def support_view(request):
+    if request.method == 'POST':
+        form = SupportForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            
+            full_message = f"Nome: {name}\nE-mail: {email}\n\nMensagem:\n{message}"
+            
+            try:
+                send_mail(
+                    subject=f"Suporte Exchange Skills: {subject}",
+                    message=full_message,
+                    from_email=None,  # Usa o EMAIL_HOST_USER do settings
+                    recipient_list=['suporte.caioamarante@gmail.com'],
+                    fail_silently=False,
+                )
+                messages.success(request, 'Sua mensagem foi enviada com sucesso! Responderemos em breve.')
+                return redirect('support')
+            except Exception as e:
+                messages.error(request, 'Erro ao enviar a mensagem. Verifique se o e-mail e a Senha de App estão corretos no arquivo .env.')
+    else:
+        initial_data = {'name': request.user.full_name, 'email': request.user.email}
+        form = SupportForm(initial=initial_data)
+        
+    return render(request, 'support.html', {'form': form})
